@@ -23,6 +23,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -35,16 +36,27 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.dummy.jetreaderapp.component.InputField
 import com.dummy.jetreaderapp.component.PasswordInputField
+import com.dummy.jetreaderapp.navigation.Reader
+import com.dummy.jetreaderapp.navigation.ReaderNavigation
+import com.dummy.jetreaderapp.viewModal.LoginViewModal
+
 
 @Composable
 fun LoginScreen(navController: NavController) {
 
+
+
     val showLoginForm = rememberSaveable {
         mutableStateOf(true)
     }
+    val loginViewModal = hiltViewModel<LoginViewModal>()
+
+    val isLoading = loginViewModal.isLoading.collectAsState().value
+
     Surface(Modifier.fillMaxSize()) {
         Column(
             verticalArrangement = Arrangement.Top,
@@ -57,12 +69,38 @@ fun LoginScreen(navController: NavController) {
                 style = MaterialTheme.typography.titleLarge, color = Color.Red.copy(alpha = 0.5f)
             )
 
-            if (showLoginForm.value) UserForm(loading = false, isCreateAccount = false) { email, pwd ->
+            if (showLoginForm.value) UserForm(loading = isLoading, isCreateAccount = false) { email, pwd ->
                 Log.d("LoginForm", "LoginScreen: $email $pwd ")
+
+                loginViewModal.authWithEmailAndPassword(email,pwd,"login",{
+                    navController.navigate(Reader.HomeScreen.name){
+                        popUpTo(navController.graph.startDestinationId) {
+                            inclusive = true
+                        }
+                    }
+
+                },{
+                    errorMessage->
+                    Log.d("loginForm", "LoginScreen: $errorMessage")
+                })
+
             } else
             {
-                UserForm(loading = false, isCreateAccount = true) { email, pwd ->
+                UserForm(loading = isLoading, isCreateAccount = true) { email, pwd ->
                     Log.d("LoginForm", "LoginScreen: $email $pwd ")
+
+                    loginViewModal.authWithEmailAndPassword(email,pwd,"signup",{
+                        navController.navigate(Reader.HomeScreen.name){
+                            popUpTo(navController.graph.startDestinationId) {
+                                inclusive = true
+                            }
+                        }
+
+                    },{
+                            errorMessage->
+                        Log.d("loginForm", "LoginScreen: $errorMessage")
+                    })
+
                 }
 
             }

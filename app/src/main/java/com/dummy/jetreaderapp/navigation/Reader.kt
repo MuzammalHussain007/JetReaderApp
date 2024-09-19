@@ -1,12 +1,15 @@
 package com.dummy.jetreaderapp.navigation
 
+import com.dummy.jetreaderapp.screens.UserStatsScreen
+
 enum class Reader {
     SplashScreen,
-    LoginScreen, SignUpScreen, BookDetailScreen, HomeScreen, SearchScreen, UpdateScreen, ReaderStatsScreen;
+    LoginScreen, SignUpScreen, BookDetailScreen,UserStatsScreen, HomeScreen, SearchScreen, UpdateScreen, ReaderStatsScreen;
 
     companion object {
         fun fromRouteName(name: String): Reader = when (name.substringBefore("/")) {
             SplashScreen.name -> SplashScreen
+            UserStatsScreen.name-> UserStatsScreen
             LoginScreen.name -> LoginScreen
             SignUpScreen.name -> SignUpScreen
             BookDetailScreen.name -> BookDetailScreen

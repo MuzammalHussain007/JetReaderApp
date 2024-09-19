@@ -23,6 +23,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.dummy.jetreaderapp.navigation.Reader
+import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.delay
 
 
@@ -45,7 +46,23 @@ fun SplashScreen(navController: NavController) {
             ))
 
         delay(2000L)
-        navController.navigate(Reader.LoginScreen.name)
+
+        if (FirebaseAuth.getInstance().currentUser?.uid!=null)
+        {
+            navController.navigate(Reader.HomeScreen.name){
+                popUpTo(Reader.SplashScreen.name){
+                    inclusive = true
+                }
+            }
+        }else
+        {
+            navController.navigate(Reader.LoginScreen.name){
+                popUpTo(Reader.SplashScreen.name){
+                    inclusive = true
+                }
+            }
+        }
+
 
     })
     
